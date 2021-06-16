@@ -1,0 +1,9 @@
+{
+	"name": "demof2",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "ad40743f-43ad-4442-b775-ca211d2a9981",
+		"tenantId": "6c674420-102e-4a12-9902-c8c75d132f6f"
+	}
+}
