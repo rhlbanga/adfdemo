@@ -1,0 +1,21 @@
+{
+	"name": "onpremSqlServer",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"DbName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=False;data source=U5-DPE-LTP-0139\\SQLEXPRESS;initial catalog=@{linkedService().DbName};user id=SQLUSER1",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJmNTBhYWY5MS1iYTBlLTRkMWMtODc5NS0yZGU0OTY2YWQ3MDIiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "sh-integrationRuntime-sqlserver",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

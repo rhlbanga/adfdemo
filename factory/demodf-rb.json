@@ -1,0 +1,9 @@
+{
+	"name": "demodf-rb",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "d8e94c50-f4ff-4204-800a-8f6ba7c8abc5",
+		"tenantId": "6c674420-102e-4a12-9902-c8c75d132f6f"
+	}
+}

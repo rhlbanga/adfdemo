@@ -1,0 +1,7 @@
+{
+	"name": "sh-integrationRuntime-sqlserver",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "connect to on prem sql server"
+	}
+}

@@ -1,0 +1,74 @@
+{
+	"name": "Copy_Data",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT * FROM @{pipeline().parameters.Source_Table}",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "onpremSqlServersource",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "clouldsqlserver",
+						"type": "DatasetReference",
+						"parameters": {
+							"Target_Table": {
+								"value": "@pipeline().parameters.Target_Table",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"Source_Table": {
+				"type": "string",
+				"defaultValue": "orders"
+			},
+			"Target_Table": {
+				"type": "string",
+				"defaultValue": "orders"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-06-09T20:18:34Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,28 @@
+{
+	"name": "clouldsqlserver",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "clouldsqlserver",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"Db_Name": "Target_Db"
+			}
+		},
+		"parameters": {
+			"Target_Table": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": {
+				"value": "@dataset().Target_Table",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

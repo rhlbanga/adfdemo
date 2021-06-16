@@ -1,0 +1,6 @@
+{
+	"name": "sh-demo2",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}

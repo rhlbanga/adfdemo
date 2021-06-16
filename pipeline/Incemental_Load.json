@@ -1,0 +1,186 @@
+{
+	"name": "Incemental_Load",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Lookup_Old_Dt",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Lookup_New_Dt",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT * FROM @{pipeline().parameters.Source_Table} \nWHERE  CAST(InsertDateTime AS DATETIME2) >  CAST('@{activity('Lookup_Old_Dt').output.firstRow.LastLoadDate}' AS DATETIME2)\nAND CAST(InsertDateTime AS DATETIME2)<= CAST('@{activity('Lookup_New_Dt').output.firstRow.New_Dt }' AS DATETIME2)",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "onpremSqlServersource",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "clouldsqlserver",
+						"type": "DatasetReference",
+						"parameters": {
+							"Target_Table": {
+								"value": "@pipeline().parameters.Target_Table",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Lookup_Old_Dt",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "Sect max(CAST (LastLoadDate AS DATETIME2))  AS LastLoadDate   from Load_Details",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "clouldsqlserver",
+						"type": "DatasetReference",
+						"parameters": {
+							"Target_Table": "LastLoadDate"
+						}
+					}
+				}
+			},
+			{
+				"name": "Lookup_New_Dt",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT CAST(MAX(InsertDateTime) AS DATETIME2) as New_Dt FROM @{pipeline().parameters.Source_Table}",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "onpremSqlServersource",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Stored procedure1",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[sp_SetLoadDate]",
+					"storedProcedureParameters": {
+						"NewTime": {
+							"value": {
+								"value": "@activity('Lookup_New_Dt').output.firstRow.New_Dt",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"TableName": {
+							"value": "orders",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "clouldsqlserver",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"Db_Name": "target_db"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"Source_Table": {
+				"type": "string",
+				"defaultValue": "orders"
+			},
+			"Target_Table": {
+				"type": "string",
+				"defaultValue": "orders"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-06-11T12:48:55Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
